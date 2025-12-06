@@ -1,137 +1,149 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Crop Recommendation System{% endblock %}
-
-{% block extra_css %}
-<style>
-    .dashboard-header {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .stat-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-    }
-    
-    .stat-card h3 {
-        font-size: 2.5rem;
-        font-weight: 700;
-    }
-    
-    .prediction-card {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 15px;
-        transition: all 0.3s;
-    }
-    
-    .prediction-card:hover {
-        transform: translateX(10px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="dashboard-header">
-        <h1><i class="fas fa-tachometer-alt"></i> Welcome, {{ session.full_name }}!</h1>
-        <p class="text-muted">Here's your farming dashboard</p>
-    </div>
-    
-    <div class="row g-4 mb-4">
-        <div class="col-md-4">
-            <div class="stat-card">
-                <i class="fas fa-chart-line fa-2x mb-3"></i>
-                <h3>{{ recent_predictions|length }}</h3>
-                <p>Recent Predictions</p>
+<section class="py-5" style="background-color: #f8f9fa; min-height: 90vh; margin-top: 76px;">
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold text-dark">Dashboard</h1>
+                <p class="text-muted">Welcome back, {{ session.full_name }}! Here's your farming overview.</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                    <i class="fas fa-plus me-2"></i>New Prediction
+                </a>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stat-card">
-                <i class="fas fa-seedling fa-2x mb-3"></i>
-                <h3>{{ crop_stats|length }}</h3>
-                <p>Crops Recommended</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card">
-                <i class="fas fa-calendar-check fa-2x mb-3"></i>
-                <h3>Active</h3>
-                <p>Account Status</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="mb-4"><i class="fas fa-history"></i> Recent Predictions</h4>
-                    {% if recent_predictions %}
-                        {% for pred in recent_predictions %}
-                        <div class="prediction-card">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1">{{ pred.predicted_crop }}</h5>
-                                    <small class="text-muted">
-                                        N: {{ pred.nitrogen }}, P: {{ pred.phosphorus }}, K: {{ pred.potassium }}
-                                    </small>
-                                </div>
-                                <div class="text-end">
-                                    <small class="text-muted">{{ pred.prediction_date.strftime('%Y-%m-%d %H:%M') }}</small>
-                                </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-muted mb-0">Total Predictions</h5>
+                            <div class="icon-shape bg-light text-primary rounded-circle p-3">
+                                <i class="fas fa-clipboard-list fa-lg"></i>
                             </div>
                         </div>
-                        {% endfor %}
-                        <a href="{{ url_for('history') }}" class="btn btn-outline-primary mt-3">View All History</a>
-                    {% else %}
-                        <p class="text-muted">No predictions yet. Start by getting your first recommendation!</p>
-                        <a href="{{ url_for('predict_form') }}" class="btn btn-primary">Get Recommendation</a>
-                    {% endif %}
+                        <h2 class="fw-bold mb-0">{{ recent_predictions|length }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-muted mb-0">Top Crop</h5>
+                            <div class="icon-shape bg-light text-success rounded-circle p-3">
+                                <i class="fas fa-crown fa-lg"></i>
+                            </div>
+                        </div>
+                        <h2 class="fw-bold mb-0">{{ crop_stats[0]['predicted_crop'] if crop_stats else 'N/A' }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-muted mb-0">Action Required</h5>
+                            <div class="icon-shape bg-light text-warning rounded-circle p-3">
+                                <i class="fas fa-bell fa-lg"></i>
+                            </div>
+                        </div>
+                        <h2 class="fw-bold mb-0">None</h2>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="mb-4"><i class="fas fa-chart-pie"></i> Top Crops</h4>
-                    {% if crop_stats %}
-                        {% for stat in crop_stats[:5] %}
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>{{ stat.predicted_crop }}</span>
-                            <span class="badge bg-primary">{{ stat.count }}</span>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted">No data available yet</p>
-                    {% endif %}
+
+        <!-- Charts Section (if available) -->
+        {% if charts %}
+        <div class="row mb-5">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0">Crop Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="cropPieChart"></div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="card mt-4">
-                <div class="card-body text-center">
-                    <h5 class="mb-3">Quick Actions</h5>
-                    <a href="{{ url_for('predict_form') }}" class="btn btn-primary w-100 mb-2">
-                        <i class="fas fa-plus"></i> New Prediction
-                    </a>
-                    <a href="{{ url_for('crops') }}" class="btn btn-outline-primary w-100 mb-2">
-                        <i class="fas fa-leaf"></i> Browse Crops
-                    </a>
-                    <a href="{{ url_for('profile') }}" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-user"></i> My Profile
-                    </a>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0">Activity Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="trendChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Activity -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Recent Predictions</h5>
+                <a href="{{ url_for('history') }}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Date</th>
+                                <th>Crop</th>
+                                <th>Conditions (N/P/K)</th>
+                                <th>Temp/Hum</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in recent_predictions %}
+                            <tr>
+                                <td class="ps-4 text-muted">{{ pred['prediction_date'].strftime('%Y-%m-%d') }}</td>
+                                <td><span class="fw-bold text-dark">{{ pred['predicted_crop'] }}</span></td>
+                                <td>{{ pred['nitrogen'] }}/{{ pred['phosphorus'] }}/{{ pred['potassium'] }}</td>
+                                <td>{{ pred['temperature'] }}°C / {{ pred['humidity'] }}%</td>
+                                <td><span
+                                        class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Complete</span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">No predictions yet. <a
+                                        href="{{ url_for('predict_form') }}">Start your first analysis!</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% if charts %}
+<script id="cropPieData" type="application/json">
+    {{ charts.crop_pie | safe }}
+</script>
+<script id="trendsData" type="application/json">
+    {{ charts.monthly_trends | safe }}
+</script>
+<script>
+    var cropPie = JSON.parse(document.getElementById('cropPieData').textContent);
+    Plotly.newPlot('cropPieChart', cropPie.data, cropPie.layout);
+
+    var trends = JSON.parse(document.getElementById('trendsData').textContent);
+    Plotly.newPlot('trendChart', trends.data, trends.layout);
+</script>
+{% endif %}
 {% endblock %}

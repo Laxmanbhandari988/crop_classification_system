@@ -1,75 +1,76 @@
 {% extends "base.html" %}
 
-{% block title %}Prediction History{% endblock %}
-
-{% block extra_css %}
-<style>
-    .history-header {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .history-table {
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-    }
-    
-    .table {
-        margin-bottom: 0;
-    }
-    
-    .table thead {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="history-header">
-        <h1><i class="fas fa-history"></i> Prediction History</h1>
-        <p class="text-muted">View all your past crop recommendations</p>
-    </div>
-    
-    <div class="history-table">
-        {% if predictions %}
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Crop</th>
-                    <th>N-P-K</th>
-                    <th>Temp</th>
-                    <th>Humidity</th>
-                    <th>pH</th>
-                    <th>Rainfall</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pred in predictions %}
-                <tr>
-                    <td>{{ pred.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td><strong style="color: #667eea;">{{ pred.predicted_crop }}</strong></td>
-                    <td>{{ pred.nitrogen }}-{{ pred.phosphorus }}-{{ pred.potassium }}</td>
-                    <td>{{ pred.temperature }}°C</td>
-                    <td>{{ pred.humidity }}%</td>
-                    <td>{{ pred.ph }}</td>
-                    <td>{{ pred.rainfall }}mm</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="text-center p-5">
-            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No prediction history yet</p>
-            <a href="{{ url_for('predict_form') }}" class="btn btn-primary">Get Your First Prediction</a>
+<section class="py-5" style="background-color: #f8f9fa; min-height: 90vh; margin-top: 76px;">
+    <div class="container">
+        <h1 class="fw-bold text-dark mb-4">Prediction History</h1>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3">Date</th>
+                                <th class="py-3">Crop</th>
+                                <th class="py-3">Nitrogen</th>
+                                <th class="py-3">Phosphorus</th>
+                                <th class="py-3">Potassium</th>
+                                <th class="py-3">Temp</th>
+                                <th class="py-3">Humidity</th>
+                                <th class="py-3">pH</th>
+                                <th class="py-3">Rainfall</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in predictions %}
+                            <tr>
+                                <td class="ps-4 text-muted border-bottom-0">{{
+                                    pred['prediction_date'].strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td class="fw-bold text-dark border-bottom-0">{{ pred['predicted_crop'] }}</td>
+                                <td class="border-bottom-0">{{ pred['nitrogen'] }}</td>
+                                <td class="border-bottom-0">{{ pred['phosphorus'] }}</td>
+                                <td class="border-bottom-0">{{ pred['potassium'] }}</td>
+                                <td class="border-bottom-0">{{ pred['temperature'] }}</td>
+                                <td class="border-bottom-0">{{ pred['humidity'] }}</td>
+                                <td class="border-bottom-0">{{ pred['ph'] }}</td>
+                                <td class="border-bottom-0">{{ pred['rainfall'] }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">No history found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if total > per_page %}
+            <div class="card-footer bg-white border-0 py-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link border-0 text-dark"
+                                href="{{ url_for('history', page=page-1) }}">Previous</a>
+                        </li>
+                        {% endif %}
+
+                        <li class="page-item disabled">
+                            <span class="page-link border-0 text-muted">Page {{ page }}</span>
+                        </li>
+
+                        {% if (page * per_page) < total %} <li class="page-item">
+                            <a class="page-link border-0 text-dark"
+                                href="{{ url_for('history', page=page+1) }}">Next</a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

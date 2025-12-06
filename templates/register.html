@@ -1,68 +1,64 @@
 {% extends "base.html" %}
 
-{% block title %}Register - Crop Recommendation System{% endblock %}
-
-{% block extra_css %}
-<style>
-    .register-container {
-        max-width: 500px;
-        margin: 50px auto;
-    }
-    
-    .register-card {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    }
-    
-    .register-card h2 {
-        color: #667eea;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-    
-    .form-label {
-        font-weight: 600;
-        color: #333;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="register-container">
-        <div class="register-card">
-            <h2><i class="fas fa-user-plus"></i> Create Account</h2>
-            <form method="POST" action="{{ url_for('register') }}">
-                <div class="mb-3">
-                    <label for="full_name" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="full_name" name="full_name" required>
+<section class="prediction-section" style="min-height: 90vh; background: #f8f9fa;">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-md-8 col-lg-6">
+                <div class="form-card mt-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                        <h2 class="fw-bold">Create Account</h2>
+                        <p class="text-muted">Join our farming community today</p>
+                    </div>
+
+                    <form method="POST" action="">
+                        {{ form.csrf_token }}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name</label>
+                                {{ form.full_name(class="form-control", placeholder="John Doe") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                {{ form.username(class="form-control", placeholder="johndoe") }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            {{ form.email(class="form-control", placeholder="john@example.com") }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone(class="form-control", placeholder="+1234567890") }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Password</label>
+                                {{ form.password(class="form-control", placeholder="********") }}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Confirm Password</label>
+                                {{ form.confirm_password(class="form-control", placeholder="********") }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-predict") }}
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}"
+                                class="text-success fw-bold text-decoration-none">Sign In</a></p>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone Number (Optional)</label>
-                    <input type="tel" class="form-control" id="phone" name="phone">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required minlength="6">
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">
-                    <i class="fas fa-user-plus"></i> Register
-                </button>
-            </form>
-            <div class="text-center mt-3">
-                <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

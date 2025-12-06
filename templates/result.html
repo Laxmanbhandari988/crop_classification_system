@@ -1,168 +1,95 @@
 {% extends "base.html" %}
 
-{% block title %}Prediction Result - {{ crop }}{% endblock %}
-
-{% block extra_css %}
-<style>
-    .result-container {
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-    
-    .result-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 50px;
-        border-radius: 20px;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    
-    .result-header h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
-    
-    .crop-image {
-        width: 100%;
-        height: 300px;
-        object-fit: cover;
-        border-radius: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .info-card {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .info-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 15px;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .info-item:last-child {
-        border-bottom: none;
-    }
-    
-    .info-label {
-        font-weight: 600;
-        color: #667eea;
-    }
-    
-    .badge-custom {
-        background: #667eea;
-        color: white;
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="result-container">
-        <div class="result-header">
-            <i class="fas fa-check-circle fa-3x mb-3"></i>
-            <h1>{{ crop }}</h1>
-            <p class="lead">is the best crop to cultivate with your conditions!</p>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-5">
-                <div class="info-card">
-                    {% if crop_info %}
-                    <img src="{{ url_for('static', filename='images/crops/' + crop_info.image_url) }}" 
-                         alt="{{ crop }}" class="crop-image" 
-                         onerror="this.src='{{ url_for('static', filename='images/default-crop.jpg') }}'">
-                    <h4 class="mb-3">{{ crop }}</h4>
-                    <p>{{ crop_info.description }}</p>
-                    <a href="{{ url_for('crop_detail', crop_name=crop) }}" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-info-circle"></i> View Full Details
-                    </a>
-                    {% else %}
-                    <img src="{{ url_for('static', filename='images/default-crop.jpg') }}" 
-                         alt="{{ crop }}" class="crop-image">
-                    <h4>{{ crop }}</h4>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="col-md-7">
-                <div class="info-card">
-                    <h4 class="mb-4"><i class="fas fa-chart-bar"></i> Your Input Parameters</h4>
-                    <div class="info-item">
-                        <span class="info-label">Nitrogen (N)</span>
-                        <span class="badge-custom">{{ input_data.nitrogen }} kg/ha</span>
+<section class="py-5" style="background-color: #f8f9fa; margin-top: 76px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Success Card -->
+                <div class="card border-0 shadow-lg overflow-hidden rounded-4 mb-4">
+                    <div class="card-header bg-success text-white text-center py-4 border-0">
+                        <h2 class="fw-bold mb-0">Recommendation Found!</h2>
+                        <p class="mb-0 opacity-75">Based on your soil and climate data</p>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Phosphorus (P)</span>
-                        <span class="badge-custom">{{ input_data.phosphorus }} kg/ha</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Potassium (K)</span>
-                        <span class="badge-custom">{{ input_data.potassium }} kg/ha</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Temperature</span>
-                        <span class="badge-custom">{{ input_data.temperature }}°C</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Humidity</span>
-                        <span class="badge-custom">{{ input_data.humidity }}%</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">pH Level</span>
-                        <span class="badge-custom">{{ input_data.ph }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Rainfall</span>
-                        <span class="badge-custom">{{ input_data.rainfall }} mm</span>
+                    <div class="card-body p-5 text-center bg-white">
+                        <div class="mb-4">
+                            <span class="display-1 text-success"><i class="fas fa-leaf"></i></span>
+                        </div>
+                        <h1 class="display-4 fw-bold text-dark mb-3">{{ crop }}</h1>
+                        <p class="lead text-muted mb-4">is the best crop to cultivate under these conditions.</p>
+
+                        {% if match_score %}
+                        <div class="progress mb-4" style="height: 25px;">
+                            <div id="match-confidence-bar"
+                                class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                                role="progressbar" aria-valuenow="{{ match_score }}" aria-valuemin="0"
+                                aria-valuemax="100">
+                                Match Confidence: {{ match_score }}%
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                var score = parseFloat("{{ match_score }}");
+                                var bar = document.getElementById('match-confidence-bar');
+                                if (bar) {
+                                    bar.style.width = score + "%";
+                                }
+                            });
+                        </script>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{{ url_for('crop_detail', crop_name=crop) }}"
+                                class="btn btn-outline-success btn-lg rounded-pill px-5">Learn More</a>
+                            <a href="{{ url_for('predict_form') }}"
+                                class="btn btn-primary btn-lg rounded-pill px-5">Analyze Again</a>
+                        </div>
                     </div>
                 </div>
-                
-                {% if crop_info %}
-                <div class="info-card">
-                    <h4 class="mb-4"><i class="fas fa-leaf"></i> Ideal Growing Conditions</h4>
-                    <div class="info-item">
-                        <span class="info-label">Temperature</span>
-                        <span>{{ crop_info.ideal_temperature }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Humidity</span>
-                        <span>{{ crop_info.ideal_humidity }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">pH Level</span>
-                        <span>{{ crop_info.ideal_ph }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Rainfall</span>
-                        <span>{{ crop_info.ideal_rainfall }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Growing Season</span>
-                        <span>{{ crop_info.growing_season }}</span>
+
+                <!-- Analysis Chart -->
+                {% if chart %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold text-center mb-4">Condition Analysis</h4>
+                        <div id="radarChart" style="height: 400px;"></div>
                     </div>
                 </div>
                 {% endif %}
+
+                <!-- Input Summary -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-transparent border-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0">Input Parameters</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            {% for key, value in input_data.items() %}
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 bg-light rounded-3 text-center h-100">
+                                    <small class="text-muted text-uppercase d-block mb-1">{{ key }}</small>
+                                    <span class="fw-bold text-dark">{{ value }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="text-center mt-4">
-            <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg me-3">
-                <i class="fas fa-redo"></i> New Prediction
-            </a>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </a>
-        </div>
     </div>
-</div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% if chart %}
+<script id="graphData" type="application/json">
+    {{ chart | safe }}
+</script>
+<script>
+    var graph = JSON.parse(document.getElementById('graphData').textContent);
+    Plotly.newPlot('radarChart', graph.data, graph.layout);
+</script>
+{% endif %}
 {% endblock %}

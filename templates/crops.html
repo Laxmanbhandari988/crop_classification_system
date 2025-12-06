@@ -1,71 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}All Crops - Crop Recommendation System{% endblock %}
-
-{% block extra_css %}
-<style>
-    .page-header {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-    
-    .crop-card {
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.3s;
-        height: 100%;
-    }
-    
-    .crop-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    }
-    
-    .crop-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-    }
-    
-    .crop-card-body {
-        padding: 20px;
-    }
-    
-    .crop-card h5 {
-        color: #667eea;
-        margin-bottom: 10px;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="page-header">
-        <h1><i class="fas fa-leaf"></i> Explore Crops</h1>
-        <p class="text-muted">Browse through our database of 22 different crops</p>
-    </div>
-    
-    <div class="row g-4">
-        {% for crop in crops %}
-        <div class="col-md-4 col-lg-3">
-            <div class="crop-card">
-                <img src="{{ url_for('static', filename='images/crops/' + crop.image_url) }}" 
-                     alt="{{ crop.name }}"
-                     onerror="this.src='{{ url_for('static', filename='images/default-crop.jpg') }}'">
-                <div class="crop-card-body">
-                    <h5>{{ crop.name }}</h5>
-                    <p class="text-muted small">{{ crop.description[:80] }}...</p>
-                    <a href="{{ url_for('crop_detail', crop_name=crop.name) }}" class="btn btn-sm btn-outline-primary w-100">
-                        <i class="fas fa-info-circle"></i> Learn More
-                    </a>
-                </div>
+<section class="py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-dark mb-3">Crop Encyclopedia</h1>
+            <p class="text-muted lead">Explore our comprehensive database of crops and their requirements.</p>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8">
+                <form action="{{ url_for('crops') }}" method="GET" class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control form-control-lg border-0 shadow-sm ps-4"
+                        placeholder="Search crops (e.g., Rice, Cotton)..." value="{{ search or '' }}">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm"><i
+                            class="fas fa-search"></i></button>
+                    {% if show_all %}
+                    <a href="{{ url_for('crops') }}" class="btn btn-outline-secondary btn-lg px-4 shadow-sm">Reset</a>
+                    {% else %}
+                    <a href="{{ url_for('crops', show_all='true') }}"
+                        class="btn btn-outline-secondary btn-lg px-4 shadow-sm">Show All</a>
+                    {% endif %}
+                </form>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Crops Grid -->
+        <div class="row g-4">
+            {% for crop in crops %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card border-0 shadow-sm h-100 hover-elevate transition-all">
+                    <!-- Placeholder image logic or specific crop images if available -->
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <span class="display-4 text-success"><i class="fas fa-seedling"></i></span>
+                        </div>
+                        <h4 class="fw-bold mb-2">{{ crop['name'] if crop['name'] else crop[1] }}</h4>
+                        <!-- Handle dict or tuple return -->
+                        <p class="text-muted small mb-3">Optimal for specific conditions</p>
+                        <a href="{{ url_for('crop_detail', crop_name=crop['name'] if crop['name'] else crop[1]) }}"
+                            class="btn btn-outline-primary rounded-pill btn-sm px-4">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <h3 class="text-muted">No crops found matching your search.</h3>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}

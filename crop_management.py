@@ -44,13 +44,12 @@ csrf = CSRFProtect(app)
 # Create upload directory if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Load ML models (legacy support)
+# Load ML models
 try:
     model = pickle.load(open('model.pkl', 'rb'))
-    sc = pickle.load(open('standscaler.pkl', 'rb'))
-    ms = pickle.load(open('minmaxscaler.pkl', 'rb'))
+    # Random Forest trained on raw data - no scalers needed
 except FileNotFoundError:
-    model = sc = ms = None
+    model = None
 
 # Crop dictionary with additional info
 crop_dict = {
@@ -144,7 +143,7 @@ def index():
     except:
         stats = {'total_users': 0, 'total_predictions': 0, 'popular_crops': []}
     
-    return render_template('home_modern.html', stats=stats)
+    return render_template('index.html', stats=stats)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -171,7 +170,7 @@ def register():
         except Exception as e:
             flash('Username or email already exists!', 'danger')
     
-    return render_template('register_modern.html', form=form)
+    return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -194,7 +193,7 @@ def login():
         else:
             flash('Invalid username or password!', 'danger')
     
-    return render_template('login_modern.html', form=form)
+    return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():
@@ -241,7 +240,7 @@ def dashboard():
     # Create charts
     charts = create_dashboard_charts(crop_stats, monthly_trends)
     
-    return render_template('dashboard_modern.html', 
+    return render_template('dashboard.html', 
                          recent_predictions=recent_predictions,
                          crop_stats=crop_stats,
                          charts=charts)
@@ -286,7 +285,7 @@ def predict_form():
                 feature_list = [N, P, K, temp, humidity, ph, rainfall]
                 chart = create_prediction_chart(feature_list, crop)
                 
-                return render_template('result_modern.html', 
+                return render_template('result.html', 
                                      crop=crop, 
                                      crop_info=crop_info,
                                      input_data={
@@ -305,7 +304,7 @@ def predict_form():
             flash(f'Error processing prediction: {str(e)}', 'danger')
             return redirect(url_for('predict_form'))
     else:
-        return render_template('predict_modern.html', form=form)
+        return render_template('predict.html', form=form)
 
 @app.route('/crops')
 def crops():
@@ -322,18 +321,18 @@ def crops():
         # Show all crops when requested
         cur.execute("SELECT * FROM crops ORDER BY name")
     else:
-        # By default, only show popular crops for browsing
-        cur.execute("SELECT * FROM crops WHERE show_in_browse = TRUE ORDER BY popularity_score DESC, name")
+        # By default, show all crops sorted by popularity
+        cur.execute("SELECT * FROM crops ORDER BY popularity_score DESC, name")
     
     all_crops = cur.fetchall()
     
     # Get total count for display
     cur.execute("SELECT COUNT(*) as total FROM crops")
-    total_count = cur.fetchone()[0]
+    total_count = cur.fetchone()['total']
     
     cur.close()
     
-    return render_template('crops_modern.html', crops=all_crops, search=search, 
+    return render_template('crops.html', crops=all_crops, search=search, 
                          show_all=show_all, total_count=total_count)
 
 @app.route('/crop/<crop_name>')
@@ -353,7 +352,7 @@ def crop_detail(crop_name):
     cur.close()
     
     if crop:
-        return render_template('crop_detail_modern.html', crop=crop, avg_conditions=avg_conditions)
+        return render_template('crop_detail.html', crop=crop, avg_conditions=avg_conditions)
     else:
         flash('Crop not found!', 'danger')
         return redirect(url_for('crops'))
@@ -378,7 +377,7 @@ def history():
     total = cur.fetchone()['total']
     cur.close()
     
-    return render_template('history_modern.html', 
+    return render_template('history.html', 
                          predictions=predictions, 
                          page=page, 
                          total=total, 
@@ -396,11 +395,11 @@ def profile():
     stats = cur.fetchone()
     cur.close()
     
-    return render_template('profile_modern.html', user=user, stats=stats)
+    return render_template('profile.html', user=user, stats=stats)
 
 @app.route('/about')
 def about():
-    return render_template('about_modern.html')
+    return render_template('about.html')
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -411,7 +410,7 @@ def contact():
         flash('Thank you for your message! We will get back to you soon.', 'success')
         return redirect(url_for('contact'))
     
-    return render_template('contact_modern.html', form=form)
+    return render_template('contact.html', form=form)
 
 # API Routes
 @app.route('/api/predict', methods=['POST'])
@@ -437,9 +436,8 @@ def api_predict():
         
         # Make prediction
         single_pred = np.array(features).reshape(1, -1)
-        scaled_features = ms.transform(single_pred)
-        final_features = sc.transform(scaled_features)
-        prediction = model.predict(final_features)
+        # Random Forest trained on raw data, no scaling needed
+        prediction = model.predict(single_pred)
         
         crop = crop_dict.get(prediction[0], 'Unknown')
         
@@ -529,11 +527,11 @@ def internal_error(error):
 
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print("🌾 Crop Recommendation System")
+    print("Crop Recommendation System")
     print("="*60)
     print(f"Server running at: http://127.0.0.1:5000")
     print("Press Ctrl+C to stop")
     print("="*60 + "\n")
     
-    # Run with minimal logging
-    app.run(debug=False, port=5000, use_reloader=False)
+    # Run with debug mode to see errors
+    app.run(debug=True, port=5000, use_reloader=False)

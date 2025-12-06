@@ -1,86 +1,60 @@
 {% extends "base.html" %}
 
-{% block title %}My Profile{% endblock %}
-
-{% block extra_css %}
-<style>
-    .profile-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    
-    .profile-card {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-    }
-    
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        color: white;
-        margin: 0 auto 20px;
-    }
-    
-    .info-row {
-        padding: 15px;
-        border-bottom: 1px solid #e0e0e0;
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .info-row:last-child {
-        border-bottom: none;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="profile-container">
-        <div class="profile-card">
-            <div class="text-center mb-4">
-                <div class="profile-avatar">
-                    <i class="fas fa-user"></i>
+<section class="py-5" style="background-color: #f8f9fa; margin-top: 76px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-success text-white text-center py-5 border-0">
+                        <div class="mb-3">
+                            <i class="fas fa-user-circle fa-6x"></i>
+                        </div>
+                        <h2 class="fw-bold mb-0">{{ user['full_name'] }}</h2>
+                        <p class="mb-0 opacity-75">@{{ user['username'] }}</p>
+                    </div>
+                    <div class="card-body p-5">
+                        <h5 class="fw-bold mb-4">Account Details</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-0">
+                                <span class="text-muted">Email</span>
+                                <span class="fw-medium">{{ user['email'] }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-0">
+                                <span class="text-muted">Phone</span>
+                                <span class="fw-medium">{{ user['phone'] if user['phone'] else 'Not provided' }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-0">
+                                <span class="text-muted">Member Since</span>
+                                <span class="fw-medium">2024</span> <!-- Placeholder or from DB if available -->
+                            </li>
+                        </ul>
+
+                        <h5 class="fw-bold mb-3">Activity Stats</h5>
+                        <div class="row g-2 text-center">
+                            <div class="col-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <h3 class="fw-bold text-success mb-0">{{ stats['total_predictions'] }}</h3>
+                                    <small class="text-muted">Predictions</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <h3 class="fw-bold text-primary mb-0">Active</h3>
+                                    <small class="text-muted">Status</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-5">
+                            <a href="#" class="btn btn-outline-secondary rounded-pill px-4 me-2">Edit Profile</a>
+                            <a href="{{ url_for('logout') }}"
+                                class="btn btn-outline-danger rounded-pill px-4">Logout</a>
+                        </div>
+                    </div>
                 </div>
-                <h2>{{ user.full_name }}</h2>
-                <p class="text-muted">@{{ user.username }}</p>
-            </div>
-            
-            <h4 class="mb-3"><i class="fas fa-info-circle"></i> Account Information</h4>
-            <div class="info-row">
-                <span><strong>Full Name:</strong></span>
-                <span>{{ user.full_name }}</span>
-            </div>
-            <div class="info-row">
-                <span><strong>Username:</strong></span>
-                <span>{{ user.username }}</span>
-            </div>
-            <div class="info-row">
-                <span><strong>Email:</strong></span>
-                <span>{{ user.email }}</span>
-            </div>
-            <div class="info-row">
-                <span><strong>Phone:</strong></span>
-                <span>{{ user.phone if user.phone else 'Not provided' }}</span>
-            </div>
-            <div class="info-row">
-                <span><strong>Member Since:</strong></span>
-                <span>{{ user.created_at.strftime('%B %d, %Y') }}</span>
-            </div>
-            
-            <div class="text-center mt-4">
-                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </a>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

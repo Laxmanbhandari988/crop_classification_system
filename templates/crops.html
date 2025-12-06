@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}All Crops - Crop Recommendation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .crop-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s;
+        height: 100%;
+    }
+    
+    .crop-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .crop-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .crop-card-body {
+        padding: 20px;
+    }
+    
+    .crop-card h5 {
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-leaf"></i> Explore Crops</h1>
+        <p class="text-muted">Browse through our database of 22 different crops</p>
+    </div>
+    
+    <div class="row g-4">
+        {% for crop in crops %}
+        <div class="col-md-4 col-lg-3">
+            <div class="crop-card">
+                <img src="{{ url_for('static', filename='images/crops/' + crop.image_url) }}" 
+                     alt="{{ crop.name }}"
+                     onerror="this.src='{{ url_for('static', filename='images/default-crop.jpg') }}'">
+                <div class="crop-card-body">
+                    <h5>{{ crop.name }}</h5>
+                    <p class="text-muted small">{{ crop.description[:80] }}...</p>
+                    <a href="{{ url_for('crop_detail', crop_name=crop.name) }}" class="btn btn-sm btn-outline-primary w-100">
+                        <i class="fas fa-info-circle"></i> Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

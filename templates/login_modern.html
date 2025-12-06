@@ -1,0 +1,86 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Login - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    
+    .login-card {
+        background: white;
+        padding: 50px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        max-width: 480px;
+        width: 100%;
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .login-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 2rem;
+    }
+    
+    .login-header h2 {
+        color: var(--dark-color);
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-wrapper">
+        <div class="login-card" data-aos="fade-up">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <h2>Welcome Back</h2>
+                <p class="text-muted">Sign in to continue to your dashboard</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control", type="password") }}
+                </div>
+                
+                {{ form.submit(class="btn btn-primary w-100 btn-lg mt-3") }}
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted">Don't have an account? 
+                    <a href="{{ url_for('register') }}" class="text-decoration-none fw-bold">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

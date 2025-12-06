@@ -1,0 +1,108 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Contact Us - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 60px;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+    }
+    
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .contact-info-card {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-lg);
+        text-align: center;
+    }
+    
+    .contact-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 1.75rem;
+    }
+    
+    .contact-form-card {
+        background: white;
+        padding: 50px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="contact-hero" data-aos="fade-down">
+        <h1 class="display-4 fw-bold mb-3">Get In Touch</h1>
+        <p class="lead">Have questions? We'd love to hear from you!</p>
+    </div>
+    
+    <div class="contact-grid">
+        <div class="contact-info-card" data-aos="fade-up">
+            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+            <h5>Email</h5>
+            <p class="text-muted">support@croprecommend.com</p>
+        </div>
+        <div class="contact-info-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+            <h5>Phone</h5>
+            <p class="text-muted">+1 (555) 123-4567</p>
+        </div>
+        <div class="contact-info-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <h5>Address</h5>
+            <p class="text-muted">123 Agriculture Street<br>Farm City, FC 12345</p>
+        </div>
+    </div>
+    
+    <div class="contact-form-card mt-5" data-aos="fade-up">
+        <h3 class="mb-4 text-center">Send Us a Message</h3>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control") }}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.subject.label(class="form-label") }}
+                {{ form.subject(class="form-control") }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.message.label(class="form-label") }}
+                {{ form.message(class="form-control", rows="5") }}
+            </div>
+            
+            {{ form.submit(class="btn btn-primary btn-lg w-100") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

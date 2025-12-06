@@ -1,0 +1,606 @@
+{% extends "base_modern.html" %}
+
+{% block title %}CropRecommend - Smart Agriculture Solutions{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.9) 100%);
+        color: white;
+        padding: 120px 0;
+        border-radius: 30px;
+        margin: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-section h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 24px;
+        line-height: 1.1;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.4rem;
+        margin-bottom: 40px;
+        font-weight: 400;
+        opacity: 0.95;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .hero-buttons .btn {
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 16px;
+        min-width: 180px;
+    }
+    
+    .btn-hero-primary {
+        background: white;
+        color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .btn-hero-primary:hover {
+        background: #f8f9fa;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    .btn-hero-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .btn-hero-outline:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    
+    /* Feature Cards */
+    .feature-section {
+        padding: 80px 0;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 24px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.4s ease;
+        border: 1px solid rgba(16, 185, 129, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .feature-card:hover::before {
+        left: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 60px rgba(16, 185, 129, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2rem;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .feature-card h4 {
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--dark-color);
+    }
+    
+    .feature-card p {
+        color: #6b7280;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        background: white;
+        padding: 80px 0;
+        margin: 60px 20px;
+        border-radius: 30px;
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .stat-label {
+        font-weight: 600;
+        color: var(--dark-color);
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    
+    .stat-description {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+    
+    /* How It Works Section */
+    .how-it-works {
+        padding: 80px 0;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .section-title h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 16px;
+    }
+    
+    .section-title p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .step-card {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 24px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.4s ease;
+        position: relative;
+        border: 2px solid transparent;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-color);
+    }
+    
+    .step-number {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 auto 24px;
+        position: relative;
+    }
+    
+    .step-number::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border: 2px solid var(--primary-color);
+        border-radius: 50%;
+        opacity: 0.3;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.1); opacity: 0.1; }
+        100% { transform: scale(1); opacity: 0.3; }
+    }
+    
+    .step-card h5 {
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--dark-color);
+    }
+    
+    .step-card p {
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 80px 0;
+        margin: 60px 20px;
+        border-radius: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .cta-section h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+    
+    .cta-section p {
+        font-size: 1.3rem;
+        margin-bottom: 40px;
+        opacity: 0.95;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 80px 0;
+            margin: 10px;
+            border-radius: 20px;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-buttons {
+            justify-content: center;
+        }
+        
+        .hero-buttons .btn {
+            min-width: auto;
+            width: 100%;
+            max-width: 280px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+        }
+        
+        .stats-section,
+        .cta-section {
+            margin: 40px 10px;
+            border-radius: 20px;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" data-aos="fade-up">
+    <div class="container hero-content">
+        <div class="text-center">
+            <h1 data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-leaf"></i> Smart Crop Recommendation
+            </h1>
+            <p class="lead" data-aos="fade-up" data-aos-delay="200">
+                Maximize your harvest with AI-powered crop suggestions based on soil and climate data. 
+                Join thousands of farmers who trust our intelligent recommendations.
+            </p>
+            <div class="hero-buttons" data-aos="fade-up" data-aos-delay="300">
+                {% if session.user_id %}
+                <a href="{{ url_for('predict_form') }}" class="btn btn-hero-primary">
+                    <i class="fas fa-chart-line"></i> Get Recommendation
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-hero-outline">
+                    <i class="fas fa-tachometer-alt"></i> View Dashboard
+                </a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-hero-primary">
+                    <i class="fas fa-user-plus"></i> Get Started Free
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-hero-outline">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="feature-section">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>Why Choose CropRecommend?</h2>
+            <p>Discover the power of AI-driven agriculture with our comprehensive crop recommendation system</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>AI-Powered Intelligence</h4>
+                    <p>Advanced machine learning algorithms analyze your soil and climate data to provide highly accurate crop recommendations tailored to your specific conditions.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h4>Data-Driven Insights</h4>
+                    <p>Built on extensive agricultural research and real-world farming data from thousands of successful farms across different climatic conditions.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>Instant Results</h4>
+                    <p>Get comprehensive crop recommendations in seconds with detailed information about optimal growing conditions and expected yields.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4>22+ Crop Types</h4>
+                    <p>Comprehensive database covering cereals, fruits, vegetables, pulses, and cash crops suitable for various agricultural zones.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h4>Track Your Progress</h4>
+                    <p>Monitor your prediction history, analyze trends, and make informed decisions based on your farming patterns and results.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Mobile Friendly</h4>
+                    <p>Access your crop recommendations anywhere, anytime with our responsive design that works perfectly on all devices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section" data-aos="fade-up">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                    <span class="stat-number">{{ stats.total_users or '1000+' }}</span>
+                    <div class="stat-label">Happy Farmers</div>
+                    <div class="stat-description">Trust our recommendations</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+                    <span class="stat-number">{{ stats.total_predictions or '10K+' }}</span>
+                    <div class="stat-label">Predictions Made</div>
+                    <div class="stat-description">Successful recommendations</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+                    <span class="stat-number">95%</span>
+                    <div class="stat-label">Accuracy Rate</div>
+                    <div class="stat-description">Proven results</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Available</div>
+                    <div class="stat-description">Always at your service</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="how-it-works">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>How It Works</h2>
+            <p>Get started with crop recommendations in just four simple steps</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h5>Create Account</h5>
+                    <p>Sign up for your free account and join our community of smart farmers</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h5>Input Farm Data</h5>
+                    <p>Enter your soil parameters and local climate conditions</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h5>AI Analysis</h5>
+                    <p>Our advanced algorithms analyze your data and environmental factors</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h5>Get Results</h5>
+                    <p>Receive personalized crop recommendations with detailed growing guides</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Crops Section -->
+{% if stats.popular_crops %}
+<div class="container my-5">
+    <div class="section-title" data-aos="fade-up">
+        <h2>Most Recommended Crops</h2>
+        <p>See what crops are trending among our farming community</p>
+    </div>
+    
+    <div class="row g-4">
+        {% for crop in stats.popular_crops %}
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <h4>{{ crop.predicted_crop }}</h4>
+                <p>Recommended {{ crop.count }} times by our AI system</p>
+                <a href="{{ url_for('crop_detail', crop_name=crop.predicted_crop) }}" class="btn btn-outline-primary btn-sm mt-3">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- CTA Section -->
+<div class="cta-section" data-aos="fade-up">
+    <div class="container cta-content">
+        <h2>Ready to Optimize Your Harvest?</h2>
+        <p>Join thousands of farmers who have increased their yield with our AI-powered recommendations</p>
+        {% if not session.user_id %}
+        <a href="{{ url_for('register') }}" class="btn btn-hero-primary btn-lg">
+            <i class="fas fa-rocket"></i> Start Your Journey
+        </a>
+        {% else %}
+        <a href="{{ url_for('predict_form') }}" class="btn btn-hero-primary btn-lg">
+            <i class="fas fa-chart-line"></i> Make a Prediction
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

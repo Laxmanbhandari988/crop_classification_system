@@ -1,0 +1,601 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Dashboard - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 60px 0;
+        border-radius: 30px;
+        margin: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 30s linear infinite;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .dashboard-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .welcome-text {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .quick-action-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+    
+    .quick-action-btn:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    /* Stats Cards */
+    .stats-section {
+        margin-top: -40px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(16, 185, 129, 0.1);
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-color);
+    }
+    
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.8rem;
+        color: white;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        margin-bottom: 8px;
+    }
+    
+    .stat-label {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 4px;
+    }
+    
+    .stat-description {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+    
+    /* Content Cards */
+    .content-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .content-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .card-header-custom {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 24px 30px;
+        border: none;
+    }
+    
+    .card-header-custom h4 {
+        margin: 0;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .card-body-custom {
+        padding: 30px;
+    }
+    
+    /* Recent Predictions */
+    .prediction-item {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .prediction-item:hover {
+        background: white;
+        box-shadow: var(--shadow-md);
+        transform: translateX(5px);
+    }
+    
+    .prediction-crop {
+        font-weight: 700;
+        color: var(--dark-color);
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .crop-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.9rem;
+    }
+    
+    .prediction-params {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .param-badge {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--primary-color);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .prediction-date {
+        color: #6b7280;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    /* Top Crops */
+    .crop-stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .crop-stat-item:last-child {
+        border-bottom: none;
+    }
+    
+    .crop-name {
+        font-weight: 600;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .crop-count {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    /* Charts */
+    .chart-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 30px;
+    }
+    
+    .chart-title {
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 30px;
+        color: #6b7280;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 20px;
+    }
+    
+    .empty-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 12px;
+    }
+    
+    .empty-description {
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 40px 0;
+            margin: 10px;
+            border-radius: 20px;
+        }
+        
+        .welcome-text {
+            font-size: 2rem;
+        }
+        
+        .quick-actions {
+            justify-content: center;
+        }
+        
+        .quick-action-btn {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .prediction-params {
+            gap: 8px;
+        }
+        
+        .param-badge {
+            font-size: 0.75rem;
+            padding: 3px 6px;
+        }
+        
+        .chart-container {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header" data-aos="fade-up">
+    <div class="container dashboard-content">
+        <div class="text-center">
+            <h1 class="welcome-text">
+                <i class="fas fa-seedling"></i> Welcome back, {{ session.full_name }}!
+            </h1>
+            <p class="welcome-subtitle">Here's your personalized farming dashboard</p>
+            <div class="quick-actions">
+                <a href="{{ url_for('predict_form') }}" class="quick-action-btn">
+                    <i class="fas fa-plus"></i> New Prediction
+                </a>
+                <a href="{{ url_for('crops') }}" class="quick-action-btn">
+                    <i class="fas fa-leaf"></i> Browse Crops
+                </a>
+                <a href="{{ url_for('history') }}" class="quick-action-btn">
+                    <i class="fas fa-history"></i> View History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="container stats-section">
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number">{{ recent_predictions|length }}</div>
+                <div class="stat-label">Recent Predictions</div>
+                <div class="stat-description">Last 5 recommendations</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="stat-number">{{ crop_stats|length }}</div>
+                <div class="stat-label">Unique Crops</div>
+                <div class="stat-description">Recommended for you</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-number">Active</div>
+                <div class="stat-label">Account Status</div>
+                <div class="stat-description">All systems ready</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Success Rate</div>
+                <div class="stat-description">AI accuracy</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    {% if charts %}
+    <div class="row g-4 mb-5">
+        {% if charts.crop_pie %}
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="chart-container">
+                <h5 class="chart-title">
+                    <i class="fas fa-chart-pie"></i> Your Crop Distribution
+                </h5>
+                <div id="cropPieChart"></div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if charts.monthly_trends %}
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="chart-container">
+                <h5 class="chart-title">
+                    <i class="fas fa-chart-line"></i> Monthly Prediction Trends
+                </h5>
+                <div id="monthlyTrendsChart"></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Content Section -->
+    <div class="row g-4">
+        <!-- Recent Predictions -->
+        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <h4><i class="fas fa-history"></i> Recent Predictions</h4>
+                </div>
+                <div class="card-body-custom">
+                    {% if recent_predictions %}
+                        {% for pred in recent_predictions %}
+                        <div class="prediction-item">
+                            <div class="prediction-crop">
+                                <div class="crop-icon">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                {{ pred.predicted_crop }}
+                            </div>
+                            <div class="prediction-params">
+                                <span class="param-badge">N: {{ "%.1f"|format(pred.nitrogen) }}</span>
+                                <span class="param-badge">P: {{ "%.1f"|format(pred.phosphorus) }}</span>
+                                <span class="param-badge">K: {{ "%.1f"|format(pred.potassium) }}</span>
+                                <span class="param-badge">pH: {{ "%.1f"|format(pred.ph) }}</span>
+                            </div>
+                            <div class="prediction-date">
+                                <i class="fas fa-clock"></i>
+                                {{ pred.prediction_date.strftime('%B %d, %Y at %I:%M %p') }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('history') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-history"></i> View Complete History
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="empty-title">No Predictions Yet</h5>
+                            <p class="empty-description">
+                                Start your farming journey by getting your first AI-powered crop recommendation. 
+                                Our system will analyze your soil and climate data to suggest the best crops for your land.
+                            </p>
+                            <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus"></i> Get Your First Prediction
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Crops & Quick Actions -->
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <!-- Top Crops -->
+            <div class="content-card mb-4">
+                <div class="card-header-custom">
+                    <h4><i class="fas fa-star"></i> Your Top Crops</h4>
+                </div>
+                <div class="card-body-custom">
+                    {% if crop_stats %}
+                        {% for stat in crop_stats[:5] %}
+                        <div class="crop-stat-item">
+                            <div class="crop-name">
+                                <i class="fas fa-seedling text-success"></i>
+                                {{ stat.predicted_crop }}
+                            </div>
+                            <div class="crop-count">{{ stat.count }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-seedling fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No crop data available yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+                </div>
+                <div class="card-body-custom">
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('predict_form') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> New Prediction
+                        </a>
+                        <a href="{{ url_for('crops') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-leaf"></i> Browse All Crops
+                        </a>
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user"></i> Edit Profile
+                        </a>
+                        <a href="{{ url_for('history') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-history"></i> View History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if charts %}
+<script>
+    // Render Crop Distribution Pie Chart
+    {% if charts.crop_pie %}
+    var cropPieData = {{ charts.crop_pie|safe }};
+    Plotly.newPlot('cropPieChart', cropPieData.data, cropPieData.layout, {
+        responsive: true,
+        displayModeBar: false
+    });
+    {% endif %}
+    
+    // Render Monthly Trends Line Chart
+    {% if charts.monthly_trends %}
+    var monthlyTrendsData = {{ charts.monthly_trends|safe }};
+    Plotly.newPlot('monthlyTrendsChart', monthlyTrendsData.data, monthlyTrendsData.layout, {
+        responsive: true,
+        displayModeBar: false
+    });
+    {% endif %}
+</script>
+{% endif %}
+
+<script>
+    // Add some interactive effects
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-5px) scale(1)';
+        });
+    });
+    
+    // Animate numbers on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const numbers = document.querySelectorAll('.stat-number');
+        numbers.forEach(number => {
+            const finalValue = number.textContent;
+            if (!isNaN(finalValue)) {
+                let currentValue = 0;
+                const increment = finalValue / 50;
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        number.textContent = finalValue;
+                        clearInterval(timer);
+                    } else {
+                        number.textContent = Math.floor(currentValue);
+                    }
+                }, 30);
+            }
+        });
+    });
+</script>
+{% endblock %}

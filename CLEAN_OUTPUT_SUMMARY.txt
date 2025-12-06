@@ -1,0 +1,66 @@
+╔══════════════════════════════════════════════════════════════╗
+║              CLEAN TERMINAL OUTPUT - SUMMARY                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+BEFORE (Crowded):
+  * [timestamp] * Running on http://127.0.0.1:5000
+  * WARNING: This is a development server...
+  * 127.0.0.1 - - [timestamp] "GET / HTTP/1.1" 200 -
+  * 127.0.0.1 - - [timestamp] "GET /static/css/..." 304 -
+  * 127.0.0.1 - - [timestamp] "GET /static/js/..." 304 -
+  * [Many more lines...]
+
+AFTER (Clean):
+  ============================================================
+  🌾 Crop Recommendation System
+  ============================================================
+  Server running at: http://127.0.0.1:5000
+  Press Ctrl+C to stop
+  ============================================================
+
+  [That's it! No more clutter]
+
+══════════════════════════════════════════════════════════════
+
+CHANGES MADE:
+
+  1. ✅ Disabled debug mode
+  2. ✅ Suppressed request logs
+  3. ✅ Removed auto-reloader messages
+  4. ✅ Clean startup banner
+  5. ✅ Minimal setup script output
+
+══════════════════════════════════════════════════════════════
+
+HOW TO RUN:
+
+  python app_modern.py
+
+  Or double-click:
+  start_server.bat
+
+══════════════════════════════════════════════════════════════
+
+WHAT YOU'LL SEE:
+
+  ✓ Clean startup message
+  ✓ Server URL
+  ✓ Errors (if they occur)
+  
+  ✗ No request logs
+  ✗ No debug messages
+  ✗ No warnings
+
+══════════════════════════════════════════════════════════════
+
+BENEFITS:
+
+  • Professional appearance
+  • Easy to read
+  • Less distraction
+  • Focus on important info
+  • Terminal stays clean
+
+══════════════════════════════════════════════════════════════
+
+For more details, see: RUN_CLEAN.md

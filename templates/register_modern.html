@@ -1,0 +1,106 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Register - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    
+    .register-card {
+        background: white;
+        padding: 50px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        max-width: 550px;
+        width: 100%;
+    }
+    
+    .register-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .register-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 2rem;
+    }
+    
+    .register-header h2 {
+        color: var(--dark-color);
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="register-wrapper">
+        <div class="register-card" data-aos="fade-up">
+            <div class="register-header">
+                <div class="register-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2>Create Account</h2>
+                <p class="text-muted">Join us to get personalized crop recommendations</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('register') }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    {{ form.full_name.label(class="form-label") }}
+                    {{ form.full_name(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control", type="email") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control", type="password") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {{ form.confirm_password(class="form-control", type="password") }}
+                </div>
+                
+                {{ form.submit(class="btn btn-primary w-100 btn-lg mt-3") }}
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted">Already have an account? 
+                    <a href="{{ url_for('login') }}" class="text-decoration-none fw-bold">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

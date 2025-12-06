@@ -1,0 +1,101 @@
+{% extends "base_modern.html" %}
+
+{% block title %}About Us - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 80px 0;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+    }
+    
+    .about-section {
+        background: white;
+        padding: 50px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 30px;
+    }
+    
+    .about-section h2 {
+        color: var(--primary-color);
+        margin-bottom: 24px;
+        font-weight: 700;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        margin-top: 30px;
+    }
+    
+    .feature-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        padding: 30px;
+        border-radius: 16px;
+        text-align: center;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="about-hero" data-aos="fade-down">
+        <h1 class="display-3 fw-bold mb-3">About CropRecommend</h1>
+        <p class="lead">Empowering farmers with AI-driven insights</p>
+    </div>
+    
+    <div class="about-section" data-aos="fade-up">
+        <h2><i class="fas fa-info-circle"></i> Our System</h2>
+        <p class="lead">The Crop Recommendation System is an AI-powered platform designed to help farmers and agricultural professionals make informed decisions about crop selection.</p>
+        
+        <p>Our system analyzes various environmental and soil parameters including nitrogen, phosphorus, potassium levels, temperature, humidity, pH, and rainfall to recommend the most suitable crops for cultivation.</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                <h5>AI Powered</h5>
+                <p class="small text-muted">Machine learning algorithms for accurate predictions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-seedling"></i></div>
+                <h5>22 Crops</h5>
+                <p class="small text-muted">Wide range of crop recommendations</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h5>Data Driven</h5>
+                <p class="small text-muted">Based on extensive agricultural research</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h5>User Friendly</h5>
+                <p class="small text-muted">Easy to use interface</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="about-section" data-aos="fade-up">
+        <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+        <p>To empower farmers with data-driven insights and help optimize agricultural productivity through technology. We believe that by providing accurate crop recommendations, we can contribute to sustainable farming practices and improved yields.</p>
+    </div>
+</div>
+{% endblock %}

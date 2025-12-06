@@ -1,0 +1,251 @@
+{% extends "base_modern.html" %}
+
+{% block title %}All Crops - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .crops-hero {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 60px 0;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .crops-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .search-box {
+        max-width: 600px;
+        margin: 30px auto 0;
+    }
+    
+    .search-box input {
+        border-radius: 50px;
+        padding: 15px 25px;
+        border: none;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .crop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .crop-card-modern {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .crop-card-modern:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .crop-image-wrapper {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+    
+    .crop-card-modern img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .crop-card-modern:hover img {
+        transform: scale(1.1);
+    }
+    
+    .crop-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .ml-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .ml-badge i {
+        font-size: 0.8rem;
+    }
+    
+    .crop-card-body {
+        padding: 24px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .crop-card-modern h5 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+    }
+    
+    .crop-description {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        flex-grow: 1;
+    }
+    
+    .crop-stats {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .stat-item {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .stat-icon {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+        .crop-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="crops-hero" data-aos="fade-down">
+        <div class="hero-content">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="fas fa-leaf"></i> Explore Crops
+            </h1>
+            <p class="lead mb-0">{{ total_count }}+ crops in our database</p>
+            <p class="mt-2"><small>{% if show_all %}Showing all crops{% else %}Showing popular crops{% endif %}</small></p>
+            
+            <div class="search-box">
+                <form method="GET" action="{{ url_for('crops') }}">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Search crops..." value="{{ search if search else '' }}">
+                </form>
+            </div>
+            
+            {% if not show_all and not search %}
+            <div class="mt-3">
+                <a href="{{ url_for('crops', show_all='true') }}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-th"></i> View All {{ total_count }} Crops
+                </a>
+            </div>
+            {% elif show_all %}
+            <div class="mt-3">
+                <a href="{{ url_for('crops') }}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-star"></i> Show Popular Crops Only
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="crop-grid">
+        {% for crop in crops %}
+        <div class="crop-card-modern" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+            <div class="crop-image-wrapper">
+                <img src="{{ url_for('static', filename='images/crops/' + crop.image_url) }}" 
+                     alt="{{ crop.name }}"
+                     onerror="this.style.display='none'">
+                <div class="crop-badge">
+                    <i class="fas fa-seedling"></i> {{ crop.growing_season }}
+                </div>
+            </div>
+            <div class="crop-card-body">
+                <h5>{{ crop.name }}</h5>
+                <p class="crop-description">{{ crop.description[:100] }}{% if crop.description|length > 100 %}...{% endif %}</p>
+                
+                <div class="crop-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon"><i class="fas fa-thermometer-half"></i></div>
+                        <div class="stat-label">Temp</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon"><i class="fas fa-tint"></i></div>
+                        <div class="stat-label">Humidity</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon"><i class="fas fa-balance-scale"></i></div>
+                        <div class="stat-label">pH</div>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('crop_detail', crop_name=crop.name) }}" class="btn btn-primary w-100">
+                    <i class="fas fa-info-circle"></i> View Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if not crops %}
+    <div class="text-center py-5">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h4>No crops found</h4>
+        <p class="text-muted">Try a different search term</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

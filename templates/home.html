@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Crop Recommendation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        color: white;
+        padding: 100px 0;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+    }
+    
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        animation: fadeInUp 1s;
+    }
+    
+    .hero-section p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        animation: fadeInUp 1.2s;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 20px;
+    }
+    
+    .stats-section {
+        background: white;
+        padding: 60px 0;
+        margin: 50px 20px;
+        border-radius: 30px;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1><i class="fas fa-leaf"></i> Smart Crop Recommendation</h1>
+        <p>Maximize your harvest with AI-powered crop suggestions based on soil and climate data</p>
+        {% if session.user_id %}
+        <a href="{{ url_for('predict_form') }}" class="btn btn-light btn-lg me-3">
+            <i class="fas fa-chart-line"></i> Get Recommendation
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-3">
+            <i class="fas fa-user-plus"></i> Get Started
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center text-white mb-5">Why Choose Our System?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4>AI-Powered</h4>
+                <p>Advanced machine learning algorithms analyze your data to provide accurate crop recommendations</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h4>Data-Driven</h4>
+                <p>Based on extensive agricultural research and real-world farming data from thousands of farms</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h4>Instant Results</h4>
+                <p>Get crop recommendations in seconds with detailed information about growing conditions</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">22</div>
+                <p class="text-muted">Crop Types</p>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">95%</div>
+                <p class="text-muted">Accuracy</p>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">10K+</div>
+                <p class="text-muted">Predictions</p>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">24/7</div>
+                <p class="text-muted">Available</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="container my-5">
+    <h2 class="text-center text-white mb-5">How It Works</h2>
+    <div class="row g-4">
+        <div class="col-md-3 text-center">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h5>1. Sign Up</h5>
+                <p>Create your free account</p>
+            </div>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h5>2. Enter Data</h5>
+                <p>Input soil & climate parameters</p>
+            </div>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h5>3. AI Analysis</h5>
+                <p>Our system analyzes your data</p>
+            </div>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <h5>4. Get Results</h5>
+                <p>Receive crop recommendations</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

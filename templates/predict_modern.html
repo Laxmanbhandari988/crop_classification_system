@@ -1,0 +1,535 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Crop Prediction - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .prediction-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 60px 0;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+    }
+    
+    .prediction-form {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: var(--shadow-xl);
+        margin-top: -50px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .form-section {
+        margin-bottom: 40px;
+    }
+    
+    .form-section h4 {
+        color: var(--dark-color);
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-color);
+        display: inline-block;
+    }
+    
+    .form-group {
+        margin-bottom: 24px;
+    }
+    
+    .form-control {
+        height: 50px;
+        font-size: 1rem;
+        border-radius: 12px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+        transform: translateY(-1px);
+    }
+    
+    .input-group {
+        position: relative;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        z-index: 5;
+    }
+    
+    .input-group .form-control {
+        padding-left: 50px;
+    }
+    
+    .parameter-card {
+        background: #f8fafc;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .parameter-card:hover {
+        border-color: var(--primary-color);
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .parameter-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+    }
+    
+    .parameter-title {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 8px;
+    }
+    
+    .parameter-description {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 16px;
+    }
+    
+    .range-info {
+        font-size: 0.8rem;
+        color: var(--primary-color);
+        font-weight: 500;
+    }
+    
+    .submit-section {
+        text-align: center;
+        padding: 40px 0 20px;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 40px;
+    }
+    
+    .btn-predict {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 16px 48px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 16px;
+        border: none;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+        min-width: 200px;
+    }
+    
+    .btn-predict:hover {
+        background: var(--gradient-primary);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .btn-predict:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .tips-section {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 40px;
+    }
+    
+    .tips-title {
+        color: var(--secondary-color);
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .tip-icon {
+        color: var(--secondary-color);
+        margin-top: 2px;
+    }
+    
+    .tip-text {
+        color: #1e40af;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    /* Loading Animation */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .loading-content {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .prediction-header {
+            padding: 40px 0;
+            margin: 10px;
+            border-radius: 20px;
+        }
+        
+        .prediction-form {
+            margin: 20px 10px;
+            padding: 30px 20px;
+            border-radius: 20px;
+        }
+        
+        .parameter-card {
+            margin-bottom: 20px;
+        }
+        
+        .btn-predict {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="prediction-header" data-aos="fade-up">
+    <div class="container">
+        <h1><i class="fas fa-chart-line"></i> Crop Prediction</h1>
+        <p class="lead">Enter your soil and climate parameters to get AI-powered crop recommendations</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="prediction-form" data-aos="fade-up" data-aos-delay="200">
+        <form method="POST" action="{{ url_for('predict_form') }}" id="predictionForm">
+            {{ form.hidden_tag() }}
+            
+            <!-- Soil Parameters Section -->
+            <div class="form-section">
+                <h4><i class="fas fa-mountain"></i> Soil Parameters</h4>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="parameter-title">Nitrogen (N)</div>
+                            <div class="parameter-description">Essential macronutrient for plant growth and leaf development</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-flask"></i></span>
+                                {{ form.nitrogen(class="form-control", placeholder="Enter nitrogen content") }}
+                            </div>
+                            <div class="range-info">Range: 0-300 kg/ha</div>
+                            {% if form.nitrogen.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.nitrogen.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="parameter-title">Phosphorus (P)</div>
+                            <div class="parameter-description">Crucial for root development and energy transfer</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-seedling"></i></span>
+                                {{ form.phosphorus(class="form-control", placeholder="Enter phosphorus content") }}
+                            </div>
+                            <div class="range-info">Range: 0-200 kg/ha</div>
+                            {% if form.phosphorus.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.phosphorus.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="parameter-title">Potassium (K)</div>
+                            <div class="parameter-description">Important for disease resistance and fruit quality</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-leaf"></i></span>
+                                {{ form.potassium(class="form-control", placeholder="Enter potassium content") }}
+                            </div>
+                            <div class="range-info">Range: 0-300 kg/ha</div>
+                            {% if form.potassium.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.potassium.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="parameter-title">pH Level</div>
+                            <div class="parameter-description">Soil acidity/alkalinity affecting nutrient availability</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-tint"></i></span>
+                                {{ form.ph(class="form-control", placeholder="Enter pH level", step="0.1") }}
+                            </div>
+                            <div class="range-info">Range: 0-14 (7 is neutral)</div>
+                            {% if form.ph.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.ph.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Climate Parameters Section -->
+            <div class="form-section">
+                <h4><i class="fas fa-cloud-sun"></i> Climate Parameters</h4>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="parameter-title">Temperature</div>
+                            <div class="parameter-description">Average temperature in your growing region</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-thermometer-half"></i></span>
+                                {{ form.temperature(class="form-control", placeholder="Enter temperature", step="0.1") }}
+                            </div>
+                            <div class="range-info">Range: -10°C to 60°C</div>
+                            {% if form.temperature.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.temperature.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-eye-dropper"></i>
+                            </div>
+                            <div class="parameter-title">Humidity</div>
+                            <div class="parameter-description">Relative humidity percentage in the air</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-eye-dropper"></i></span>
+                                {{ form.humidity(class="form-control", placeholder="Enter humidity percentage", step="0.1") }}
+                            </div>
+                            <div class="range-info">Range: 0-100%</div>
+                            {% if form.humidity.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.humidity.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="parameter-card">
+                            <div class="parameter-icon">
+                                <i class="fas fa-cloud-rain"></i>
+                            </div>
+                            <div class="parameter-title">Rainfall</div>
+                            <div class="parameter-description">Annual rainfall in your area</div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-cloud-rain"></i></span>
+                                {{ form.rainfall(class="form-control", placeholder="Enter rainfall amount", step="0.1") }}
+                            </div>
+                            <div class="range-info">Range: 0-5000 mm</div>
+                            {% if form.rainfall.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.rainfall.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Section -->
+            <div class="submit-section">
+                {{ form.submit(class="btn btn-predict", id="submitBtn") }}
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        Our AI will analyze your parameters and recommend the best crops for your conditions
+                    </small>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <h5 class="tips-title">
+                <i class="fas fa-lightbulb"></i> Tips for Accurate Predictions
+            </h5>
+            <div class="tip-item">
+                <i class="fas fa-check-circle tip-icon"></i>
+                <div class="tip-text">Get soil tested from a certified laboratory for accurate N-P-K values</div>
+            </div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle tip-icon"></i>
+                <div class="tip-text">Use average climate data from the past 3-5 years for better results</div>
+            </div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle tip-icon"></i>
+                <div class="tip-text">Consider seasonal variations when entering temperature and humidity</div>
+            </div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle tip-icon"></i>
+                <div class="tip-text">pH levels between 6.0-7.5 are ideal for most crops</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h5>Analyzing Your Data...</h5>
+        <p class="text-muted">Our AI is processing your parameters to find the best crop recommendations</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('predictionForm').addEventListener('submit', function(e) {
+        // Show loading overlay
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        
+        // Disable submit button
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+    });
+    
+    // Add input validation and formatting
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('input', function() {
+            // Remove invalid class when user starts typing
+            this.classList.remove('is-invalid');
+            
+            // Add visual feedback for valid inputs
+            if (this.value && this.checkValidity()) {
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+        
+        // Add focus effects
+        input.addEventListener('focus', function() {
+            this.parentElement.parentElement.style.transform = 'translateY(-2px)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Auto-fill demo data (for testing purposes)
+    function fillDemoData() {
+        document.querySelector('input[name="nitrogen"]').value = '90';
+        document.querySelector('input[name="phosphorus"]').value = '42';
+        document.querySelector('input[name="potassium"]').value = '43';
+        document.querySelector('input[name="temperature"]').value = '20.8';
+        document.querySelector('input[name="humidity"]').value = '82.0';
+        document.querySelector('input[name="ph"]').value = '6.5';
+        document.querySelector('input[name="rainfall"]').value = '202.9';
+    }
+    
+    // Add demo data button (remove in production)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const demoBtn = document.createElement('button');
+        demoBtn.type = 'button';
+        demoBtn.className = 'btn btn-outline-secondary btn-sm';
+        demoBtn.innerHTML = '<i class="fas fa-magic"></i> Fill Demo Data';
+        demoBtn.onclick = fillDemoData;
+        document.querySelector('.submit-section').appendChild(demoBtn);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,384 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Prediction Result - {{ crop }} - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 80px 0;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .result-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="celebration" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.2)"/></pattern></defs><rect width="100" height="100" fill="url(%23celebration)"/></svg>');
+    }
+    
+    .result-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        font-size: 3rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+    
+    .crop-name {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .result-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        margin-bottom: 40px;
+    }
+    
+    .confidence-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .result-content-section {
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .content-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .content-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .card-header-gradient {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 24px 30px;
+        border-bottom: none;
+    }
+    
+    .crop-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        height: 400px;
+    }
+    
+    .crop-image-large {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .crop-image-container:hover .crop-image-large {
+        transform: scale(1.05);
+    }
+    
+    .crop-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        padding: 30px;
+        color: white;
+    }
+    
+    .parameter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 30px;
+    }
+    
+    .parameter-item {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        padding: 20px;
+        border-radius: 16px;
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    
+    .parameter-item:hover {
+        transform: translateX(5px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .parameter-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .parameter-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+    }
+    
+    .ideal-conditions {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 20px;
+    }
+    
+    .condition-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .condition-row:last-child {
+        border-bottom: none;
+    }
+    
+    .condition-label {
+        font-weight: 600;
+        color: #1e40af;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .condition-value {
+        font-weight: 600;
+        color: #3b82f6;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+        .crop-name {
+            font-size: 2.5rem;
+        }
+        
+        .result-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .parameter-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="result-header" data-aos="fade-down">
+        <div class="result-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1 class="crop-name">{{ crop }}</h1>
+            <p class="result-subtitle">is the perfect crop for your conditions!</p>
+            <div class="confidence-badge">
+                <i class="fas fa-chart-line"></i>
+                <span>AI-Powered Recommendation</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="result-content-section">
+        <div class="row">
+            <div class="col-lg-5" data-aos="fade-right">
+                <div class="content-card">
+                    {% if crop_info %}
+                    <div class="crop-image-container">
+                        <img src="{{ url_for('static', filename='images/crops/' + crop_info.image_url) }}" 
+                             alt="{{ crop }}" class="crop-image-large"
+                             onerror="this.style.display='none'">
+                        <div class="crop-overlay">
+                            <h3 class="mb-0">{{ crop }}</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-muted mb-4">{{ crop_info.description }}</p>
+                        <a href="{{ url_for('crop_detail', crop_name=crop) }}" class="btn btn-primary w-100">
+                            <i class="fas fa-info-circle"></i> View Complete Details
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="crop-image-container">
+                        <img src="{{ url_for('static', filename='images/default-crop.jpg') }}" 
+                             alt="{{ crop }}" class="crop-image-large"
+                             onerror="this.style.display='none'">
+                        <div class="crop-overlay">
+                            <h3 class="mb-0">{{ crop }}</h3>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-7" data-aos="fade-left">
+                <div class="content-card">
+                    <div class="card-header-gradient">
+                        <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Your Input Parameters</h4>
+                    </div>
+                    <div class="parameter-grid">
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-flask"></i> Nitrogen (N)
+                            </div>
+                            <div class="parameter-value">{{ input_data.nitrogen }} kg/ha</div>
+                        </div>
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-vial"></i> Phosphorus (P)
+                            </div>
+                            <div class="parameter-value">{{ input_data.phosphorus }} kg/ha</div>
+                        </div>
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-atom"></i> Potassium (K)
+                            </div>
+                            <div class="parameter-value">{{ input_data.potassium }} kg/ha</div>
+                        </div>
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-thermometer-half"></i> Temperature
+                            </div>
+                            <div class="parameter-value">{{ input_data.temperature }}°C</div>
+                        </div>
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-tint"></i> Humidity
+                            </div>
+                            <div class="parameter-value">{{ input_data.humidity }}%</div>
+                        </div>
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-balance-scale"></i> pH Level
+                            </div>
+                            <div class="parameter-value">{{ input_data.ph }}</div>
+                        </div>
+                        <div class="parameter-item">
+                            <div class="parameter-label">
+                                <i class="fas fa-cloud-rain"></i> Rainfall
+                            </div>
+                            <div class="parameter-value">{{ input_data.rainfall }} mm</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if crop_info %}
+                <div class="content-card" data-aos="fade-up">
+                    <div class="card-header-gradient">
+                        <h4 class="mb-0"><i class="fas fa-leaf"></i> Ideal Growing Conditions</h4>
+                    </div>
+                    <div class="ideal-conditions">
+                        <div class="condition-row">
+                            <span class="condition-label">
+                                <i class="fas fa-thermometer-half"></i> Temperature
+                            </span>
+                            <span class="condition-value">{{ crop_info.ideal_temperature }}</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-label">
+                                <i class="fas fa-tint"></i> Humidity
+                            </span>
+                            <span class="condition-value">{{ crop_info.ideal_humidity }}</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-label">
+                                <i class="fas fa-balance-scale"></i> pH Level
+                            </span>
+                            <span class="condition-value">{{ crop_info.ideal_ph }}</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-label">
+                                <i class="fas fa-cloud-rain"></i> Rainfall
+                            </span>
+                            <span class="condition-value">{{ crop_info.ideal_rainfall }}</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-label">
+                                <i class="fas fa-calendar-alt"></i> Growing Season
+                            </span>
+                            <span class="condition-value">{{ crop_info.growing_season }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="action-buttons" data-aos="fade-up">
+            <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-redo"></i> New Prediction
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            {% if crop_info %}
+            <a href="{{ url_for('crop_detail', crop_name=crop) }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-info-circle"></i> Crop Details
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

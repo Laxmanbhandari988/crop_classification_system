@@ -1,0 +1,104 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Prediction History - CropRecommend{% endblock %}
+
+{% block extra_css %}
+<style>
+    .history-hero {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 60px 0;
+        border-radius: 30px;
+        margin: 20px;
+        text-align: center;
+    }
+    
+    .history-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        margin-top: 40px;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+    }
+    
+    .table thead {
+        background: var(--gradient-primary);
+        color: white;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .table tbody tr:hover {
+        background: #f0fdf4;
+        transform: scale(1.01);
+    }
+    
+    .crop-badge {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="history-hero" data-aos="fade-down">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-history"></i> Prediction History
+        </h1>
+        <p class="lead">View all your past crop recommendations</p>
+    </div>
+    
+    <div class="history-card" data-aos="fade-up">
+        {% if predictions %}
+        <div class="table-wrapper">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Crop</th>
+                        <th>N-P-K</th>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
+                        <th>pH</th>
+                        <th>Rainfall</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pred in predictions %}
+                    <tr>
+                        <td>{{ pred.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td><span class="crop-badge">{{ pred.predicted_crop }}</span></td>
+                        <td>{{ pred.nitrogen }}-{{ pred.phosphorus }}-{{ pred.potassium }}</td>
+                        <td>{{ pred.temperature }}°C</td>
+                        <td>{{ pred.humidity }}%</td>
+                        <td>{{ pred.ph }}</td>
+                        <td>{{ pred.rainfall }}mm</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center p-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
+            <h4>No prediction history yet</h4>
+            <p class="text-muted mb-4">Start by getting your first crop recommendation</p>
+            <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-chart-line"></i> Get Prediction
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
